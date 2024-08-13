@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca na Página</title>
+    <style>
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Manual do Pesquisador - DIPE</h1>
+<p>Este é um exemplo de página onde você pode procurar termos específicos usando a barra de pesquisa abaixo.</p>
+
+<input type="text" id="searchInput" placeholder="Digite para buscar...">
+<button onclick="searchText()">Buscar</button>
+
+<p>Este é um exemplo de texto que pode ser pesquisado. Digite uma palavra para destacar.</p>
+<p>Mais texto aqui para fins de demonstração.</p>
+
+<script>
+    function searchText() {
+        removeHighlights();
+
+        var input = document.getElementById("searchInput").value;
+        if (!input) return;
+
+        highlightText(document.body, input);
+    }
+
+    function highlightText(node, searchTerm) {
+        if (node.nodeType === 3) { // Nó de texto
+            var matchIndex = node.data.toLowerCase().indexOf(searchTerm.toLowerCase());
+            if (matchIndex >= 0) {
+                var spanNode = document.createElement('span');
+                spanNode.className = 'highlight';
+                var matchText = node.splitText(matchIndex);
+                var afterText = matchText.splitText(searchTerm.length);
+                var highlightedText = matchText.cloneNode(true);
+                spanNode.appendChild(highlightedText);
+                matchText.parentNode.replaceChild(spanNode, matchText);
+            }
+        } else if (node.nodeType === 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
+            for (var i = 0; i < node.childNodes.length; i++) {
+                highlightText(node.childNodes[i], searchTerm);
+            }
+        }
+    }
+
+    function removeHighlights() {
+        var highlightedElements = document.querySelectorAll('.highlight');
+        highlightedElements.forEach(function(element) {
+            element.outerHTML = element.innerHTML;
+        });
+    }
+</script>
+
+</body>
+</html>
